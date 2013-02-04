@@ -1,7 +1,7 @@
 <?php
 
 // Load Field module hooks.
-//module_load_include('inc', 'bibdk_linkme', 'bibdk_linkme.field');
+module_load_include('inc', 'bibdk_adhl', 'bibdk_adhl.field');
 
 /**
  * Implements hook_menu
@@ -86,4 +86,3 @@ function bibdk_adhl_get_list($pids) {
   ));
 
 }
-

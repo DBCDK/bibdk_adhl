@@ -3,19 +3,33 @@
 /**
  * Implements hook_ding_entity_fields
  **/
-function bibdk_linkme_ding_entity_fields() {
+function bibdk_adhl_ding_entity_fields() {
   $display_full = array(
+    'default' => array (
+      'label' => 'hidden',
+      'type' => 'default',
+    ),
+    'reservation' => array(
+      'type' => 'hidden',
+    ),
     'full' => array(
       'type' => 'default',
     ),
   );
   return array(
-    'bibdk_adhl' => array(
+    'bibdk_adhl_info' => array(
       'field' => array(
         'locked' => FALSE,
         'storage' => array(
           'type' => 'virtual_field',
         ),
+      ),
+      'instance' => array(
+        'ding_entity_type' => 'bibdkWorkEntity',
+        'label' => t('ADHL'),
+        'bundle' => 'bibdkWorkEntity',
+        'entity_type' => 'bibdkWorkEntity',
+        'display' => $display_full,
       ),
     ),
   );
