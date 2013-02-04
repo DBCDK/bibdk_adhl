@@ -23,6 +23,13 @@ function bibdk_adhl_field_load($entity_type, $entities, $field, $instances, $lan
     $items[$id][] = array(
       '#type' => 'fieldset',
       '#title' => $id,
+      '#attributes' => array(
+        'class' => array('recommendation-load'),
+        'data-pid' => $id,
+      ),
+      '#attached' => array(
+        'js' => array(drupal_get_path('module', 'bibdk_adhl') . '/js/bibdk_adhl.js'),
+      ),
     );
   }
 }
