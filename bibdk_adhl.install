@@ -1,0 +1,22 @@
+<?php
+
+/**
+ * Implements hook_ding_entity_fields
+ **/
+function bibdk_linkme_ding_entity_fields() {
+  $display_full = array(
+    'full' => array(
+      'type' => 'default',
+    ),
+  );
+  return array(
+    'bibdk_adhl' => array(
+      'field' => array(
+        'locked' => FALSE,
+        'storage' => array(
+          'type' => 'virtual_field',
+        ),
+      ),
+    ),
+  );
+}

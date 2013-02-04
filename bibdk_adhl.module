@@ -1,0 +1,8 @@
+<?php
+
+// Load Field module hooks.
+module_load_include('inc', 'bibdk_linkme', 'bibdk_linkme.field');
+
+function bibdk_adhl_get_adhl_info($id){
+
+}
