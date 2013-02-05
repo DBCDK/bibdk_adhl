@@ -19,13 +19,7 @@ function bibdk_adhl_ajax_get_recommendations(){
   }
   if ($_REQUEST['more']){
     $more = array(
-      '#type' => 'link',
-      '#title' => t('see_more_adhl'),
-      '#href' => 'overlay/adhl/'.$pid,
-      '#attributes' => array(
-        'class' => array('bibdk-popup-link', 'text-small', 'text-lightgrey'),
-        'rel' => 'holdings',
-      )
+
     );
   $data['more'] = drupal_render($more);
   }

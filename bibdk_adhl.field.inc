@@ -32,12 +32,13 @@ function bibdk_adhl_field_load($entity_type, $entities, $field, $instances, $lan
       ),
     );
     $items[$id]['more'] = array(
-      '#type' => 'fieldset',
-      '#title' => $id,
-      '#attributes' => array(
-        'class' => array('recommendation-more'),
-        'data-pid' => $id,
-      ),
+        '#type' => 'link',
+        '#title' => t('see_more_adhl'),
+        '#href' => 'overlay/adhl/'.$id,
+        '#attributes' => array(
+          'class' => array('bibdk-popup-link', 'text-small', 'text-lightgrey'),
+          'rel' => 'holdings',
+        )
       );
   }
 }

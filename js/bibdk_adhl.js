@@ -6,8 +6,7 @@
             $('.recommendation-load[data-pid=' + adhl.pid + ']').replaceWith(adhl.error);
         if (adhl.list)
             $('.recommendation-load[data-pid=' + adhl.pid + ']').replaceWith(adhl.list);
-        if (adhl.more)
-            $('.recommendation-more[data-pid=' + adhl.pid + ']').replaceWith(adhl.more);
+            $('.recommendation-more[data-pid=' + adhl.pid + ']').removeClass('visuallyhidden')
     },
         Drupal.loadRecommendation = function (element) {
             var pid = $(element).attr('data-pid');
