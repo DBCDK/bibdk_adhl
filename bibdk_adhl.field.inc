@@ -20,7 +20,7 @@ function bibdk_adhl_field_info() {
  */
 function bibdk_adhl_field_load($entity_type, $entities, $field, $instances, $langcode, &$items, $age) {
   foreach ($entities as $id => $entity) {
-    $items[$id][] = array(
+    $items[$id]['recommendations'] = array(
       '#type' => 'fieldset',
       '#title' => $id,
       '#attributes' => array(
@@ -31,6 +31,14 @@ function bibdk_adhl_field_load($entity_type, $entities, $field, $instances, $lan
         'js' => array(drupal_get_path('module', 'bibdk_adhl') . '/js/bibdk_adhl.js'),
       ),
     );
+    $items[$id]['more'] = array(
+      '#type' => 'fieldset',
+      '#title' => $id,
+      '#attributes' => array(
+        'class' => array('recommendation-more'),
+        'data-pid' => $id,
+      ),
+      );
   }
 }
 

@@ -2,13 +2,12 @@
 
     /** Insert adhl results */
     Drupal.addRecommendation = function (adhl) {
-        console.log(adhl);
         if (adhl.error)
             $('.recommendation-load[data-pid=' + adhl.pid + ']').replaceWith(adhl.error);
         if (adhl.list)
             $('.recommendation-load[data-pid=' + adhl.pid + ']').replaceWith(adhl.list);
         if (adhl.more)
-            $('.recommendation-load[data-pid=' + adhl.pid + ']').append(adhl.more);
+            $('.recommendation-more[data-pid=' + adhl.pid + ']').replaceWith(adhl.more);
     },
         Drupal.loadRecommendation = function (element) {
             var pid = $(element).attr('data-pid');
@@ -21,7 +20,8 @@
                 url:Drupal.settings.basePath + 'adhl/ajax',
                 type:'POST',
                 data:{
-                    pid:pid
+                    pid:pid,
+                    more:'true'
                 },
                 dataType:'json',
                 success:Drupal.addRecommendation

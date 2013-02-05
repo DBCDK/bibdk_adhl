@@ -4,6 +4,7 @@
  * Return json object from ajax call
  */
 function bibdk_adhl_ajax_get_recommendations(){
+  dpm($_REQUEST);
   if (!$_REQUEST['pid'])
     die('pid has to be set');
 
@@ -15,17 +16,18 @@ function bibdk_adhl_ajax_get_recommendations(){
   }
   else {
     $data['list'] = bibdk_adhl_get_list($result);
+  }
+  if ($_REQUEST['more']){
     $more = array(
       '#type' => 'link',
-      '#path' => 'overlay/adhl/'.$pid,
-      '#options' => array(
-        '#attributes' => array(
-          'class' => array('more-recommendations'),
-          'target' => '_blank',
-        )
-      ),
+      '#title' => t('see_more_adhl'),
+      '#href' => 'overlay/adhl/'.$pid,
+      '#attributes' => array(
+        'class' => array('bibdk-popup-link', 'text-small', 'text-lightgrey'),
+        'rel' => 'holdings',
+      )
     );
-    $data['more'] = drupal_render($more);
+  $data['more'] = drupal_render($more);
   }
   print json_encode($data);
 }
