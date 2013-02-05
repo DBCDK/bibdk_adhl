@@ -3,14 +3,14 @@
     /** Insert adhl results */
     Drupal.addRecommendation = function (adhl) {
         console.log(adhl);
-        if(adhl.error)
+        if (adhl.error)
             $('.recommendation-load[data-pid=' + adhl.pid + ']').replaceWith(adhl.error);
         if (adhl.list)
             $('.recommendation-load[data-pid=' + adhl.pid + ']').replaceWith(adhl.list);
         if (adhl.more)
             $('.recommendation-load[data-pid=' + adhl.pid + ']').append(adhl.more);
     },
-        Drupal.loadRecommendation = function(element){
+        Drupal.loadRecommendation = function (element) {
             var pid = $(element).attr('data-pid');
             /* Add throbber*/
             $(element).addClass('ajax-progress');

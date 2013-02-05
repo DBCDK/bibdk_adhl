@@ -7,7 +7,7 @@ function bibdk_adhl_field_info() {
   return array(
     'bibdk_adhl_info' => array(
       'label' => t('ADHL'),
-      'description' => t('ADHL'),
+      'description' => t('Displays ADHL information'),
       'default_widget' => 'hidden',
       'default_formatter' => 'bibdk_adhl_default',
       'no_ui' => TRUE,
@@ -55,20 +55,18 @@ function bibdk_adhl_field_formatter_info() {
  */
 function bibdk_adhl_field_formatter_view($entity_type, $entity, $field, $instance, $langcode, $items, $display) {
   $element = array();
-  foreach($items as $delta => $item){
+  foreach ($items as $delta => $item) {
     $element[$delta]['#markup'] = drupal_render($item);
   }
   return $element;
 }
 
-function bibdk_adhl_button_form_element($form, &$form_state, $path){
+function bibdk_adhl_button_form_element($form, &$form_state, $path) {
   $form = array();
   $form['link'] = array(
     '#type' => 'textfield',
     '#default_value' => $path,
     //'#disabled' => true,
   );
-
-
   return $form;
 }
