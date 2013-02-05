@@ -5,3 +5,5 @@ version = 7.x-0.1
 package = Bibliotek.dk
 
 files[] = bibdk_adhl.field.inc
+files[] = bibdk_adhl.ajax.inc
+files[] = test/bibdk_adhl.test

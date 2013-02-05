@@ -6,7 +6,7 @@ module_load_include('inc', 'bibdk_adhl', 'bibdk_adhl.field');
 /**
  * Implements hook_menu
  */
-function bibdk_adhl_menu(){
+function bibdk_adhl_menu() {
   $items['overlay/adhl/%'] = array(
     'title' => t('Recommendations', array(), array('context' => 'bibdk_adhl')),
     'page callback' => 'bibdk_adhl_get_adhl_info',
@@ -26,13 +26,14 @@ function bibdk_adhl_menu(){
 
 /**
  * Show list of recommendations
+ *
  * @param $pid
  * @return string
  */
-function bibdk_adhl_get_adhl_info($pid){
+function bibdk_adhl_get_adhl_info($pid) {
   //TODO: numresults should be a setting
   $result = bibdk_adhl_request($pid, 10);
-  if (!$result){
+  if (!$result) {
     drupal_set_message(t('no_recommendations'), 'warning');
     return "";
   }
@@ -41,11 +42,12 @@ function bibdk_adhl_get_adhl_info($pid){
 
 /**
  * execute adhl request
+ *
  * @param $pid
  * @param int $numResults
  * @return array
  */
-function bibdk_adhl_request ($pid, $numResults = 3){
+function bibdk_adhl_request($pid, $numResults = 3) {
   /**
    * Client needs to be rewritten to recieve and return pid's
    */
@@ -63,6 +65,7 @@ function bibdk_adhl_request ($pid, $numResults = 3){
 
 /**
  * Return a list of links from a list of pid's
+ *
  * @param $pids
  * @return string html formatted list of links
  */
@@ -75,10 +78,10 @@ function bibdk_adhl_get_list($pids) {
   $works = ting_openformat_get_manifestations($pids);
   $work = reset($works);
 
-  foreach($work->manifestations as $id => $manifestation){
+  foreach ($work->manifestations as $id => $manifestation) {
     $links[] = array(
       'title' => $manifestation->getTitle(),
-      'href'  => 'work/'.$id,
+      'href' => 'work/' . $id,
     );
   }
   return theme('links', array(
