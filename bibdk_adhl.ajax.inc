@@ -12,7 +12,7 @@ function bibdk_adhl_ajax_get_recommendations(){
     $result = bibdk_adhl_request($_REQUEST['isbn']);
   }
 
-  if (!$result){
+  if (!isset($result)){
     $data['error'] = t('no_recommendations');
   }
   else {
