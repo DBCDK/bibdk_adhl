@@ -20,11 +20,18 @@ function bibdk_adhl_field_info() {
  */
 function bibdk_adhl_field_load($entity_type, $entities, $field, $instances, $langcode, &$items, $age) {
   foreach ($entities as $id => $entity) {
+    $isbn = $entity->getISBN();
+    if (!isset($isbn))
+      continue;
+    $items[$id]['description'] = array(
+      '#type' => 'markup',
+      '#markup' => t('about_adhl'),
+    );
     $items[$id]['recommendations'] = array(
       '#type' => 'fieldset',
-      '#title' => $id,
       '#attributes' => array(
         'class' => array('recommendation-load'),
+        'data-isbn' => $isbn,
         'data-pid' => $id,
       ),
       '#attached' => array(
@@ -34,10 +41,11 @@ function bibdk_adhl_field_load($entity_type, $entities, $field, $instances, $lan
     $items[$id]['more'] = array(
         '#type' => 'link',
         '#title' => t('see_more_adhl'),
-        '#href' => 'overlay/adhl/'.$id,
+        '#href' => 'overlay/adhl/'.$isbn,
         '#attributes' => array(
-          'class' => array('bibdk-popup-link', 'text-small', 'text-lightgrey'),
+          'class' => array('recommendation-more', 'bibdk-popup-link', 'text-small', 'text-lightgrey', 'visuallyhidden'),
           'rel' => 'holdings',
+          'data-pid' => $id,
         )
       );
   }

@@ -37,7 +37,15 @@ function bibdk_adhl_get_adhl_info($pid) {
     drupal_set_message(t('no_recommendations'), 'warning');
     return "";
   }
-  return bibdk_adhl_get_list($result);
+  $elements = array(
+    '#type' => 'fieldset',
+    '#title' => t('adhl_title'),
+    '#description' => t('adhl_description'),
+    'list' => array(
+      '#markup' => bibdk_adhl_get_list($result),
+    ),
+  );
+  return drupal_render($elements);
 }
 
 /**
@@ -47,20 +55,25 @@ function bibdk_adhl_get_adhl_info($pid) {
  * @param int $numResults
  * @return array
  */
-function bibdk_adhl_request($pid, $numResults = 3) {
+function bibdk_adhl_request($isbn, $numResults = 3) {
   /**
    * Client needs to be rewritten to recieve and return pid's
    */
-  /*
+  $pids = array();
   $client = new ting_client_class();
+  //$lokalId = convert_pid_to_lid_lok($pid);
   $param = array(
-    'pid' => $pid,
+    'id' => array(
+      //'localId' => $lokalId,
+      'isbn' => $isbn,
+    ),
     'numResults' => $numResults,
   );
-  $result = $client->do_adhl($param);*/
-
-  //this is just dummy content for test and development
-  return array('870970-basis:21905208', '870970-basis%3A26917921');
+  $result = $client->do_adhl($param);
+  foreach($result as $recommendation){
+    $pids[] = convert_lid_lok_to_pid($recommendation->localId, $recommendation->ownerId);
+  }
+  return $pids;
 }
 
 /**
@@ -81,11 +94,35 @@ function bibdk_adhl_get_list($pids) {
   foreach ($work->manifestations as $id => $manifestation) {
     $links[] = array(
       'title' => $manifestation->getTitle(),
-      'href' => 'work/' . $id,
+      'href'  => 'work/' . $id,
+      'attributes' => array(
+        'target' => '_blank',
+      )
     );
   }
   return theme('links', array(
     'links' => $links,
   ));
 
+}
+
+function convert_pid_to_lid_lok($pid){
+  if(preg_match('@([0-9]*)-.*:([0-9]*)@', $pid, $matches) && count($matches) == 3){
+    return array(
+      'lid' => $matches[2],
+      'lok' => $matches[1],
+    );
+  }
+
+  dpm($matches);
+}
+
+function convert_lid_lok_to_pid($lid, $lok){
+  if($lok != '870970')
+    return null;
+
+  return format_string("@lok-basis:@lid", array(
+    '@lid' => $lid,
+    '@lok' => $lok,
+  ));
 }
