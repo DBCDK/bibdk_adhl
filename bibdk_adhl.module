@@ -69,11 +69,13 @@ function bibdk_adhl_request($isbn, $numResults = 3) {
     ),
     'numResults' => $numResults,
   );
-  $result = $client->do_adhl($param);
-  foreach($result as $recommendation){
-    $pids[] = convert_lid_lok_to_pid($recommendation->localId, $recommendation->ownerId);
+  if ($result = $client->do_adhl($param)){
+    foreach($result as $recommendation){
+      $pids[] = convert_lid_lok_to_pid($recommendation->localId, $recommendation->ownerId);
+    }
+    return $pids;
   }
-  return $pids;
+
 }
 
 /**
@@ -113,8 +115,6 @@ function convert_pid_to_lid_lok($pid){
       'lok' => $matches[1],
     );
   }
-
-  dpm($matches);
 }
 
 function convert_lid_lok_to_pid($lid, $lok){
