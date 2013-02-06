@@ -42,7 +42,7 @@ function bibdk_adhl_get_adhl_info($pid) {
     '#title' => t('adhl_title'),
     '#description' => t('adhl_description'),
     'list' => array(
-      '#markup' => bibdk_adhl_get_list($result),
+      '#markup' => bibdk_adhl_get_list($result, '_blank'),
     ),
   );
   return drupal_render($elements);
@@ -82,7 +82,7 @@ function bibdk_adhl_request($isbn, $numResults = 3) {
  * @param $pids
  * @return string html formatted list of links
  */
-function bibdk_adhl_get_list($pids) {
+function bibdk_adhl_get_list($pids, $target = '_self') {
   /**
    * ting_openformat_get_manifestations returns a bibdkWork as an array and all
    * the manifestations are saved in the manifestations variable.
@@ -96,7 +96,7 @@ function bibdk_adhl_get_list($pids) {
       'title' => $manifestation->getTitle(),
       'href'  => 'work/' . $id,
       'attributes' => array(
-        'target' => '_blank',
+        'target' => $target,
       )
     );
   }
