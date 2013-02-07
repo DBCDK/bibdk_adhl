@@ -33,7 +33,7 @@ function bibdk_adhl_menu() {
 function bibdk_adhl_get_adhl_info($pid) {
   //TODO: numresults should be a setting
   $result = bibdk_adhl_request($pid, 10);
-  if (!$result) {
+  if (empty($result)) {
     drupal_set_message(t('no_recommendations'), 'warning');
     return "";
   }
@@ -92,7 +92,8 @@ function bibdk_adhl_get_list($pids, $target = '_self') {
    */
   $works = ting_openformat_get_manifestations($pids);
   $work = reset($works);
-
+  if (!isset($work->manifestations))
+    return null;
   foreach ($work->manifestations as $id => $manifestation) {
     $links[] = array(
       'title' => $manifestation->getTitle(),
