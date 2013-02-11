@@ -1,0 +1,39 @@
+<?php
+
+class BibdkAdhlUnitTest extends DrupalWebTestCase {
+
+  public static function getInfo() {
+    return array(
+      'name' => t('ADHL test'),
+      'description' => t('Test ADHL functionality'),
+      'group' => t('Bibliotek.dk - ADHL'),
+    );
+  }
+
+  public function setUp() {
+    #drupal_load('module', 'bibdk_adhl');
+    parent::setUp('bibdk_adhl', 'ting_openformat');
+    variable_set('ting_search_url', 'lakiseks.dbc.dk/openbibdk/0.5/');
+    variable_set('ting_recommendation_url', 'http://openadhl.addi.dk/1.1/');
+  }
+
+  /**
+   * Tests the output data of bibdk_adhl.ajax.inc
+   */
+  public function testAjaxResponse() {
+    $url = $this->getAbsoluteUrl('adhl/ajax');
+
+    $options = array(
+      'query' => array(
+        'pid' => '870970-test:11111111',
+        'isbn' => '87-00-34654-3',
+        'more' => 'true',
+      ),
+    );
+
+    $result = $this->drupalGetAJAX($url, $options);
+    $this->assertRaw('pid', 'Received pid');
+    $this->assertRaw('list', 'Received list for display');
+    $this->assertTrue(preg_match('@bibdk/work/870970-basis%3A22677780@', $result['list']), 'Recieved ADHL link');
+  }
+}

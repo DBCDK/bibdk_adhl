@@ -1,0 +1,129 @@
+<?php
+
+// Load Field module hooks.
+module_load_include('inc', 'bibdk_adhl', 'bibdk_adhl.field');
+
+/**
+ * Implements hook_menu
+ */
+function bibdk_adhl_menu() {
+  $items['overlay/adhl/%'] = array(
+    'title' => t('Recommendations', array(), array('context' => 'bibdk_adhl')),
+    'page callback' => 'bibdk_adhl_get_adhl_info',
+    'page arguments' => array('id' => 2),
+    'access arguments' => array('access content'),
+    'type' => MENU_CALLBACK,
+  );
+  $items['adhl/ajax'] = array(
+    'page callback' => 'bibdk_adhl_ajax_get_recommendations',
+    #'page arguments' => array('id' => 2),
+    'access arguments' => array('access content'),
+    'type' => MENU_CALLBACK,
+    'file' => 'bibdk_adhl.ajax.inc',
+  );
+  return $items;
+}
+
+/**
+ * Show list of recommendations
+ *
+ * @param $pid
+ * @return string
+ */
+function bibdk_adhl_get_adhl_info($pid) {
+  //TODO: numresults should be a setting
+  $result = bibdk_adhl_request($pid, 10);
+  if (empty($result)) {
+    drupal_set_message(t('no_recommendations'), 'warning');
+    return "";
+  }
+  $elements = array(
+    '#type' => 'fieldset',
+    '#title' => t('adhl_title'),
+    '#description' => t('adhl_description'),
+    'list' => array(
+      '#markup' => bibdk_adhl_get_list($result, '_blank'),
+    ),
+  );
+  return drupal_render($elements);
+}
+
+/**
+ * execute adhl request
+ *
+ * @param $pid
+ * @param int $numResults
+ * @return array
+ */
+function bibdk_adhl_request($isbn, $numResults = 3) {
+  /**
+   * Client needs to be rewritten to recieve and return pid's
+   */
+  $pids = array();
+  $client = new ting_client_class();
+  //$lokalId = convert_pid_to_lid_lok($pid);
+  $param = array(
+    'id' => array(
+      //'localId' => $lokalId,
+      'isbn' => $isbn,
+    ),
+    'numResults' => $numResults,
+  );
+  if ($result = $client->do_adhl($param)){
+    foreach($result as $recommendation){
+      $pids[] = convert_lid_lok_to_pid($recommendation->localId, $recommendation->ownerId);
+    }
+    return $pids;
+  }
+
+}
+
+/**
+ * Return a list of links from a list of pid's
+ *
+ * @param $pids
+ * @return string html formatted list of links
+ */
+function bibdk_adhl_get_list($pids, $target = '_self') {
+  /**
+   * ting_openformat_get_manifestations returns a bibdkWork as an array and all
+   * the manifestations are saved in the manifestations variable.
+   * TODO :ting_openformat should have a method to return an array of manifestations
+   */
+  $works = ting_openformat_get_manifestations($pids);
+  $work = reset($works);
+  if (!isset($work->manifestations))
+    return null;
+  foreach ($work->manifestations as $id => $manifestation) {
+    $links[] = array(
+      'title' => $manifestation->getTitle(),
+      'href'  => 'work/' . $id,
+      'attributes' => array(
+        'target' => $target,
+      )
+    );
+  }
+  return theme('links', array(
+    'links' => $links,
+  ));
+
+}
+
+function convert_pid_to_lid_lok($pid){
+  if(preg_match('@([0-9]*)-.*:([0-9]*)@', $pid, $matches) && count($matches) == 3){
+    return array(
+      'lid' => $matches[2],
+      'lok' => $matches[1],
+    );
+  }
+}
+
+function convert_lid_lok_to_pid($lid, $lok){
+  if($lok != '870970')
+    return null;
+
+  return format_string("@lok-basis:@lid", array(
+    '@lid' => $lid,
+    '@lok' => $lok,
+  ));
+}
