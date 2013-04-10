@@ -10,7 +10,7 @@ module_load_include('inc', 'bibdk_adhl', 'bibdk_adhl.field');
  * @param bibdkWork $entity
  */
 function bibdk_adhl_worktabs_items($tabs, $entity) {
-  $tabs['more-about']['further_search'] = array(
+  $tabs['more-about']['adhl'] = array(
     'title' => t('adhl', array(), array('context' => 'bibdk_adhl')),
     'btn_txt_closed' => t('view_more', array(), array('context' => 'bibdk_adhl')),
     'rendered' => drupal_render(bibdk_adhl_get_worktab_content($entity)),
