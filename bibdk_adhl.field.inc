@@ -63,13 +63,16 @@ function bibdk_adhl_button_form_element($form, &$form_state, $path) {
   return $form;
 }
 
+/**
+ * @param $isbn
+ * @param $id
+ * @return array $items
+ */
 function bibdk_adhl_work_field_render($isbn, $id){
-  if (!isset($isbn))
+  if (!isset($isbn)) {
     return null;
-  $items['description'] = array(
-    '#type' => 'markup',
-    '#markup' => '<p>'.t('about_adhl').'</p>',
-  );
+  }
+
   $items['recommendations'] = array(
     '#type' => 'fieldset',
     '#attributes' => array(

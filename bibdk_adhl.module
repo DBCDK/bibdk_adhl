@@ -4,6 +4,32 @@
 module_load_include('inc', 'bibdk_adhl', 'bibdk_adhl.field');
 
 /**
+ * Implements hook_worktabs_items().
+ *
+ * @param $tabs
+ * @param bibdkWork $entity
+ */
+function bibdk_adhl_worktabs_items($tabs, $entity) {
+  $tabs['more-about']['adhl'] = array(
+    'title' => t('adhl', array(), array('context' => 'bibdk_adhl')),
+    'btn_txt_closed' => t('view_more', array(), array('context' => 'bibdk_adhl')),
+    'rendered' => drupal_render(bibdk_adhl_get_worktab_content($entity)),
+    'weight' => 0,
+  );
+  return $tabs;
+}
+
+/**
+ * @param bibdkWork $entity
+ * @return array $list
+ */
+function bibdk_adhl_get_worktab_content($entity){
+  $isbn = $entity->getISBN();
+  $list = bibdk_adhl_work_field_render($isbn, $entity->getId());
+  return $list;
+}
+
+/**
  * Implements hook_menu
  */
 function bibdk_adhl_menu() {
@@ -51,8 +77,9 @@ function bibdk_adhl_get_adhl_info($pid) {
 /**
  * execute adhl request
  *
- * @param $pid
+ * @param $isbn
  * @param int $numResults
+ * @internal param $pid
  * @return array
  */
 function bibdk_adhl_request($isbn, $numResults = 3) {
