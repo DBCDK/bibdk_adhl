@@ -96,7 +96,7 @@ function bibdk_adhl_request($isbn, $numResults = 3) {
     ),
     'numResults' => $numResults,
   );
-  if ($result = $client->do_adhl($param)){
+  if ($result = $client->do_request('recommendation', $param)){
     foreach($result as $recommendation){
       $pids[] = convert_lid_lok_to_pid($recommendation->localId, $recommendation->ownerId);
     }
