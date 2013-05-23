@@ -1,8 +1,5 @@
 <?php
 
-// Load Field module hooks.
-module_load_include('inc', 'bibdk_adhl', 'bibdk_adhl.field');
-
 /**
  * Implements hook_worktabs_items().
  *
@@ -11,9 +8,9 @@ module_load_include('inc', 'bibdk_adhl', 'bibdk_adhl.field');
  */
 function bibdk_adhl_worktabs_items($tabs, $entity) {
   $tabs['more-about']['adhl'] = array(
-    'title' => t('adhl', array(), array('context' => 'bibdk_adhl')),
+    'title' => t('adhls', array(), array('context' => 'bibdk_adhl')),
     'btn_txt_closed' => t('view_more', array(), array('context' => 'bibdk_adhl')),
-    'rendered' => drupal_render(bibdk_adhl_get_worktab_content($entity)),
+    'rendered' => bibdk_adhl_get_worktab_content($entity),
     'weight' => 0,
   );
   return $tabs;
@@ -24,9 +21,10 @@ function bibdk_adhl_worktabs_items($tabs, $entity) {
  * @return array $list
  */
 function bibdk_adhl_get_worktab_content($entity){
-  $isbn = $entity->getISBN();
-  $list = bibdk_adhl_work_field_render($isbn, $entity->getId());
-  return $list;
+  //return 'fisk';
+  $list = bibdk_adhl_work_tabs_render($entity->getId());
+  dpm($list);
+  return drupal_render($list);
 }
 
 /**
@@ -82,27 +80,21 @@ function bibdk_adhl_get_adhl_info($pid) {
  * @internal param $pid
  * @return array
  */
-function bibdk_adhl_request($isbn, $numResults = 3) {
-  /**
-   * Client needs to be rewritten to recieve and return pid's
-   */
+function bibdk_adhl_request($pid, $numResults = 3) {
   $pids = array();
   $client = new ting_client_class();
-  //$lokalId = convert_pid_to_lid_lok($pid);
   $param = array(
     'id' => array(
-      //'localId' => $lokalId,
-      'isbn' => $isbn,
+      'pid' => $pid,
     ),
     'numResults' => $numResults,
   );
   if ($result = $client->do_request('recommendation', $param)){
-    foreach($result as $recommendation){
-      $pids[] = convert_lid_lok_to_pid($recommendation->localId, $recommendation->ownerId);
+    foreach($result->pid as $recommendation){
+      $pids[] = $recommendation->{'$'};
     }
     return $pids;
   }
-
 }
 
 /**
@@ -136,21 +128,33 @@ function bibdk_adhl_get_list($pids, $target = '_self') {
 
 }
 
-function convert_pid_to_lid_lok($pid){
-  if(preg_match('@([0-9]*)-.*:([0-9]*)@', $pid, $matches) && count($matches) == 3){
-    return array(
-      'lid' => $matches[2],
-      'lok' => $matches[1],
-    );
-  }
-}
 
-function convert_lid_lok_to_pid($lid, $lok){
-  if($lok != '870970')
-    return null;
+/**
+ * @param $id
+ * @return array $items
+ */
+function bibdk_adhl_work_tabs_render($id){
 
-  return format_string("@lok-basis:@lid", array(
-    '@lid' => $lid,
-    '@lok' => $lok,
-  ));
+  $items['recommendations'] = array(
+    '#type' => 'fieldset',
+    '#attributes' => array(
+      'class' => array('recommendation-load'),
+      'data-isbn' => $isbn,
+      'data-pid' => $id,
+    ),
+    '#attached' => array(
+      'js' => array(drupal_get_path('module', 'bibdk_adhl') . '/js/bibdk_adhl.js'),
+    ),
+  );
+  $items[$id]['more'] = array(
+    '#type' => 'link',
+    '#title' => t('see_more_adhl'),
+    '#href' => 'overlay/adhl/'.$id,
+    '#attributes' => array(
+      'class' => array('recommendation-more', 'bibdk-popup-link', 'text-small', 'text-lightgrey', 'visuallyhidden'),
+      'rel' => 'holdings',
+      'data-pid' => $id,
+    )
+  );
+  return $items;
 }

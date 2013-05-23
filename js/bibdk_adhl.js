@@ -2,6 +2,7 @@
 
     /** Insert adhl results */
     Drupal.addRecommendation = function (adhl) {
+        console.log(adhl);
         if (adhl.error)
             $('.recommendation-load[data-pid=' + adhl.pid + ']').replaceWith(adhl.error);
         if (adhl.list){
@@ -22,7 +23,6 @@
                 type:'POST',
                 data:{
                     pid:pid,
-                    isbn: isbn
                 },
                 dataType:'json',
                 success:Drupal.addRecommendation
@@ -40,6 +40,6 @@
 
         }
     };
-
+    console.log('fisk');
 }(jQuery));
 
