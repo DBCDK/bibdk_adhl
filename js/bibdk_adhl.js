@@ -22,7 +22,7 @@
                 url:Drupal.settings.basePath + 'adhl/ajax',
                 type:'POST',
                 data:{
-                    pid:pid,
+                    pid:pid
                 },
                 dataType:'json',
                 success:Drupal.addRecommendation
@@ -40,6 +40,5 @@
 
         }
     };
-    console.log('fisk');
 }(jQuery));
 

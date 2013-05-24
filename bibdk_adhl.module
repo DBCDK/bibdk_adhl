@@ -1,31 +1,6 @@
 <?php
 
-/**
- * Implements hook_worktabs_items().
- *
- * @param $tabs
- * @param bibdkWork $entity
- */
-function bibdk_adhl_worktabs_items($tabs, $entity) {
-  $tabs['more-about']['adhl'] = array(
-    'title' => t('adhls', array(), array('context' => 'bibdk_adhl')),
-    'btn_txt_closed' => t('view_more', array(), array('context' => 'bibdk_adhl')),
-    'rendered' => bibdk_adhl_get_worktab_content($entity),
-    'weight' => 0,
-  );
-  return $tabs;
-}
-
-/**
- * @param bibdkWork $entity
- * @return array $list
- */
-function bibdk_adhl_get_worktab_content($entity){
-  //return 'fisk';
-  $list = bibdk_adhl_work_tabs_render($entity->getId());
-  dpm($list);
-  return drupal_render($list);
-}
+module_load_include('inc', 'bibdk_adhl', 'bibdk_adhl.worktabs');
 
 /**
  * Implements hook_menu
@@ -33,7 +8,7 @@ function bibdk_adhl_get_worktab_content($entity){
 function bibdk_adhl_menu() {
   $items['overlay/adhl/%'] = array(
     'title' => t('Recommendations', array(), array('context' => 'bibdk_adhl')),
-    'page callback' => 'bibdk_adhl_get_adhl_info',
+    'page callback' => 'bibdk_adhl_get_adhl_view',
     'page arguments' => array('id' => 2),
     'access arguments' => array('access content'),
     'type' => MENU_CALLBACK,
@@ -54,66 +29,81 @@ function bibdk_adhl_menu() {
  * @param $pid
  * @return string
  */
-function bibdk_adhl_get_adhl_info($pid) {
-  //TODO: numresults should be a setting
-  $result = bibdk_adhl_request($pid, 10);
-  if (empty($result)) {
-    drupal_set_message(t('no_recommendations'), 'warning');
-    return "";
-  }
+function bibdk_adhl_get_adhl_view($pid) {
+$result = bibdk_adhl_get_adhl($pid);
+
   $elements = array(
     '#type' => 'fieldset',
     '#title' => t('adhl_title'),
     '#description' => t('adhl_description'),
     'list' => array(
-      '#markup' => bibdk_adhl_get_list($result, '_blank'),
+      '#markup' => bibdk_adhl_get_link_list_view($result, '_blank'),
     ),
   );
   return drupal_render($elements);
 }
 
+/** get manifestations from adhl
+ * @param $pid
+ * @return array
+ */
+function bibdk_adhl_get_adhl($pid, $number_of_results = 10){
+  $result = bibdk_adhl_request($pid, $number_of_results);
+  if (empty($result)) {
+    return array();
+  }
+  return bibdk_adhl_get_manifestations($result);
+}
+
+
 /**
- * execute adhl request
- *
- * @param $isbn
+ * Execute adhl request
  * @param int $numResults
  * @internal param $pid
  * @return array
  */
 function bibdk_adhl_request($pid, $numResults = 3) {
-  $pids = array();
-  $client = new ting_client_class();
+
   $param = array(
     'id' => array(
       'pid' => $pid,
     ),
     'numResults' => $numResults,
   );
-  if ($result = $client->do_request('recommendation', $param)){
-    foreach($result->pid as $recommendation){
-      $pids[] = $recommendation->{'$'};
-    }
-    return $pids;
+
+  $client = new ting_client_class();
+
+  $reponse = $client->do_request('recommendation', $param);
+
+  return bibdk_adhl_parse_response($reponse);
+
+}
+
+/** Parse response from adhl request
+ * @param $response
+ * @return array
+ */
+function bibdk_adhl_parse_response($response){
+  if(!isset($response) || empty($response))
+    return array();
+
+  $pids = array();
+  foreach($response->pid as $recommendation){
+    $pids[] = $recommendation->{'$'};
   }
+  return $pids;
+
+
 }
 
 /**
- * Return a list of links from a list of pid's
+ * Return a list of links from a list of manifestations
  *
  * @param $pids
  * @return string html formatted list of links
  */
-function bibdk_adhl_get_list($pids, $target = '_self') {
-  /**
-   * ting_openformat_get_manifestations returns a bibdkWork as an array and all
-   * the manifestations are saved in the manifestations variable.
-   * TODO :ting_openformat should have a method to return an array of manifestations
-   */
-  $works = ting_openformat_get_manifestations($pids);
-  $work = reset($works);
-  if (!isset($work->manifestations))
-    return null;
-  foreach ($work->manifestations as $id => $manifestation) {
+function bibdk_adhl_get_link_list_view($manifestations, $target = '_self') {
+  foreach ($manifestations as $id => $manifestation) {
     $links[] = array(
       'title' => $manifestation->getTitle(),
       'href'  => 'work/' . $id,
@@ -128,33 +118,21 @@ function bibdk_adhl_get_list($pids, $target = '_self') {
 
 }
 
-
-/**
- * @param $id
- * @return array $items
+/** Wrapper for ting_openformat_get_manifestations. Get manifestations for an
+ *  array of pid's
+ * @param $pids
+ * @return array
  */
-function bibdk_adhl_work_tabs_render($id){
+function bibdk_adhl_get_manifestations($pids){
+  /**
+   * ting_openformat_get_manifestations returns a bibdkWork as an array and all
+   * the manifestations are saved in the manifestations variable.
+   * TODO :ting_openformat should have a method to return an array of manifestations
+   */
+  $works = ting_openformat_get_manifestations($pids);
+  $work = reset($works);
+  if (!isset($work->manifestations))
+    return array();
 
-  $items['recommendations'] = array(
-    '#type' => 'fieldset',
-    '#attributes' => array(
-      'class' => array('recommendation-load'),
-      'data-isbn' => $isbn,
-      'data-pid' => $id,
-    ),
-    '#attached' => array(
-      'js' => array(drupal_get_path('module', 'bibdk_adhl') . '/js/bibdk_adhl.js'),
-    ),
-  );
-  $items[$id]['more'] = array(
-    '#type' => 'link',
-    '#title' => t('see_more_adhl'),
-    '#href' => 'overlay/adhl/'.$id,
-    '#attributes' => array(
-      'class' => array('recommendation-more', 'bibdk-popup-link', 'text-small', 'text-lightgrey', 'visuallyhidden'),
-      'rel' => 'holdings',
-      'data-pid' => $id,
-    )
-  );
-  return $items;
+  else return $work->manifestations;
 }
