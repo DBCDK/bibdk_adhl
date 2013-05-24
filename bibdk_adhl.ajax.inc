@@ -13,7 +13,6 @@ function bibdk_adhl_ajax_get_recommendations(){
     $result = bibdk_adhl_get_adhl($data['pid'], 3);
   }
 
-  dpm($result);
   if (empty($result)){
     $data['error'] = t('bibdk_adhl_no_recommendations');
   }

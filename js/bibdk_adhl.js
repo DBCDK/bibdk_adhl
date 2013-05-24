@@ -2,7 +2,6 @@
 
     /** Insert adhl results */
     Drupal.addRecommendation = function (adhl) {
-        console.log(adhl);
         if (adhl.error)
             $('.recommendation-load[data-pid=' + adhl.pid + ']').replaceWith(adhl.error);
         if (adhl.list){
