@@ -30,14 +30,19 @@ function bibdk_adhl_menu() {
  * @return string
  */
 function bibdk_adhl_get_adhl_view($pid) {
-$result = bibdk_adhl_get_adhl($pid);
+  $result = bibdk_adhl_get_adhl($pid);
+  $view =  bibdk_adhl_get_link_list_view($result, '_blank');
+  if ($view == null){
+    $view = t('bibdk_adhl_no_recommendations');
+  }
+
 
   $elements = array(
     '#type' => 'fieldset',
     '#title' => t('adhl_title'),
     '#description' => t('adhl_description'),
     'list' => array(
-      '#markup' => bibdk_adhl_get_link_list_view($result, '_blank'),
+      '#markup' => $view,
     ),
   );
   return drupal_render($elements);
@@ -62,7 +67,7 @@ function bibdk_adhl_get_adhl($pid, $number_of_results = 10){
  * @internal param $pid
  * @return array
  */
-function bibdk_adhl_request($pid, $numResults = 3) {
+function bibdk_adhl_request($pid, $numResults) {
 
   $param = array(
     'id' => array(
@@ -84,7 +89,7 @@ function bibdk_adhl_request($pid, $numResults = 3) {
  * @return array
  */
 function bibdk_adhl_parse_response($response){
-  if(!isset($response) || empty($response))
+  if(!isset($response->pid) || empty($response->pid))
     return array();
 
   $pids = array();
@@ -103,6 +108,10 @@ function bibdk_adhl_parse_response($response){
  * @return string html formatted list of links
  */
 function bibdk_adhl_get_link_list_view($manifestations, $target = '_self') {
+
+  if(empty($manifestations))
+    return null;
+
   foreach ($manifestations as $id => $manifestation) {
     $links[] = array(
       'title' => $manifestation->getTitle(),

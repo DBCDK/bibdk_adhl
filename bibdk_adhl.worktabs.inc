@@ -35,7 +35,6 @@ function bibdk_adhl_work_tabs_render($id){
     '#type' => 'fieldset',
     '#attributes' => array(
       'class' => array('recommendation-load'),
-      'data-isbn' => $isbn,
       'data-pid' => $id,
     ),
     '#attached' => array(
