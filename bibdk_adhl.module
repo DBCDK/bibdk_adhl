@@ -118,6 +118,7 @@ function bibdk_adhl_get_link_list_view($manifestations, $target = '_self') {
       'href'  => 'work/' . $id,
       'attributes' => array(
         'target' => $target,
+        'title' => _ting_openformat_parse_element($manifestation->getCreator(), ', ', FALSE, FALSE) . ' : ' . _ting_openformat_parse_element($manifestation->getAbstract(), ', ', FALSE, FALSE),
       )
     );
   }
