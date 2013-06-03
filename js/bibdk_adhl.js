@@ -21,8 +21,7 @@
                 url:Drupal.settings.basePath + 'adhl/ajax',
                 type:'POST',
                 data:{
-                    pid:pid,
-                    isbn: isbn
+                    pid:pid
                 },
                 dataType:'json',
                 success:Drupal.addRecommendation
@@ -40,6 +39,5 @@
 
         }
     };
-
 }(jQuery));
 
