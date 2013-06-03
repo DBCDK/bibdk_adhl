@@ -12,21 +12,29 @@ class BibdkAdhlUnitTest extends DrupalWebTestCase {
 
   public function setUp() {
     #drupal_load('module', 'bibdk_adhl');
-    parent::setUp('bibdk_adhl', 'ting_openformat');
+    parent::setUp('bibdk_adhl', 'ting_openformat', 'worktabs', 'devel');
+
+    // TODO: create mockups
     variable_set('ting_search_url', 'lakiseks.dbc.dk/openbibdk/0.5/');
-    variable_set('ting_recommendation_url', 'http://openadhl.addi.dk/1.1/');
+    variable_set('ting_recommendation_url', 'http://guesstimate.dbc.dk/~svi/adhl/server.php');
+  }
+
+  public function testRunner(){
+    $this->_testAjaxResponse();
+    $this->_testAdhlWorktabs();
+    $this->_testGetAdhl();
+    $this->_testBibdkAdhlView();
   }
 
   /**
    * Tests the output data of bibdk_adhl.ajax.inc
    */
-  public function testAjaxResponse() {
+  private function _testAjaxResponse() {
     $url = $this->getAbsoluteUrl('adhl/ajax');
 
     $options = array(
       'query' => array(
-        'pid' => '870970-test:11111111',
-        'isbn' => '87-00-34654-3',
+        'pid' => '870970-basis:22677780',
         'more' => 'true',
       ),
     );
@@ -34,6 +42,60 @@ class BibdkAdhlUnitTest extends DrupalWebTestCase {
     $result = $this->drupalGetAJAX($url, $options);
     $this->assertRaw('pid', 'Received pid');
     $this->assertRaw('list', 'Received list for display');
-    $this->assertTrue(preg_match('@bibdk/work/870970-basis%3A22677780@', $result['list']), 'Recieved ADHL link');
+    $this->assertTrue(strpos($result['list'], 'Harry Potter og De Vises Sten'), 'Recieved ADHL link');
   }
+
+  private function _testAdhlWorktabs(){
+    $this->drupalGet('work/870970-basis:22677780');
+      $this->assertText('adhls', 'title is present');
+      $this->assertText(t('see_more_adhl'), 'See more link is present');
+      $this->assertRaw('recommendation-load', 'loader is present');
+  }
+
+  private function _testGetAdhl(){
+     $result = bibdk_adhl_get_adhl('870970-basis:22677780');
+
+    $this->assertTrue(count($result) == 10, 'correct number of results');
+    $this->assertTrue(get_class($result['870970-basis:22629344']) == 'manifestation', 'first object is a manifestation');
+
+    $result = bibdk_adhl_get_adhl('870970-basis:22677780', 3);
+    debug(count($result));
+    $this->assertTrue(count($result) == 3, 'correct number of results');
+
+  }
+
+  private function _testBibdkAdhlView(){
+
+    // Test list view
+    $result = bibdk_adhl_get_adhl('870970-basis:22677780', 3);
+    $view = bibdk_adhl_get_link_list_view($result, '_blank');
+
+    $expected = '<ul class="links"><li class="0 first"><a href="/bibdk/work/870970-basis%3A22629344" target="_blank">Harry Potter og De Vises Sten</a></li>
+<li class="1"><a href="/bibdk/work/830370-katalog%3A22995154" target="_blank">Harry Potter og fangen fra Azkaban</a></li>
+<li class="2 last"><a href="/bibdk/work/870970-basis%3A23540703" target="_blank">Harry Potter og Flammernes Pokal</a></li>
+</ul>';
+    $this->assertEqual($view, $expected, 'view is correctly generated');
+
+
+    // Test full view
+    $view  = bibdk_adhl_get_adhl_view('870970-basis:22677780');
+
+    $this->assertTrue(
+      strpos($view, 'Harry Potter og fangen fra Azkaban') &&
+      strpos($view, t('adhl_title')) &&
+      strpos($view, t('adhl_description')), 'Final view correctly generated');
+
+
+    // Test empty list view
+    $view = bibdk_adhl_get_link_list_view(null, '_blank');
+    $expected = null;
+    $this->assertEqual($view, $expected, 'emtpy view is correctly generated');
+
+
+    // Test empty full view
+    $view  = bibdk_adhl_get_adhl_view(null);
+    $expected = t('bibdk_adhl_no_recommendations');
+    $this->assertTrue(strpos($view, $expected), 'emtpy view is correctly generated');
+  }
+
 }
