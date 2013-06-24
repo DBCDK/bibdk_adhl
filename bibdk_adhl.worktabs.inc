@@ -29,6 +29,8 @@ function bibdk_adhl_get_worktab_content($entity){
  * @param $id
  * @return array $items
  */
+
+ 
 function bibdk_adhl_work_tabs_render($id){
 
   $items['recommendations'] = array(
@@ -41,15 +43,7 @@ function bibdk_adhl_work_tabs_render($id){
       'js' => array(drupal_get_path('module', 'bibdk_adhl') . '/js/bibdk_adhl.js'),
     ),
   );
-  $items[$id]['more'] = array(
-    '#type' => 'link',
-    '#title' => t('see_more_adhl'),
-    '#href' => 'overlay/adhl/'.$id,
-    '#attributes' => array(
-      'class' => array('recommendation-more', 'bibdk-popup-link', 'text-small', 'text-lightgrey', 'visuallyhidden'),
-      'rel' => 'holdings',
-      'data-pid' => $id,
-    )
-  );
+
   return $items;
 }
+

@@ -6,7 +6,7 @@
             $('.recommendation-load[data-pid=' + adhl.pid + ']').replaceWith(adhl.error);
         if (adhl.list){
             $('.recommendation-load[data-pid=' + adhl.pid + ']').replaceWith(adhl.list);
-            $('.recommendation-more[data-pid=' + adhl.pid + ']').removeClass('visuallyhidden')
+            $('.recommendation-more[data-pid=' + adhl.pid + ']').removeClass('visuallyhidden');
         }
     },
         Drupal.loadRecommendation = function (element) {
@@ -26,7 +26,7 @@
                 dataType:'json',
                 success:Drupal.addRecommendation
             });
-        }
+        };
     /** Get holdingstatus via ajax */
     Drupal.behaviors.recommendation = {
 
