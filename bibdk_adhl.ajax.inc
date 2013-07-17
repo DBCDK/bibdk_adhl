@@ -10,7 +10,7 @@ function bibdk_adhl_ajax_get_recommendations(){
     $data['error'] = t('bibdk_adhl_unknown_error');
   }
   else{
-    $result = bibdk_adhl_get_adhl($data['pid'], 3);
+    $result = bibdk_adhl_get_adhl($data['pid'], 10);
   }
 
   if (empty($result)){

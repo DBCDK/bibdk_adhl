@@ -6,13 +6,6 @@ module_load_include('inc', 'bibdk_adhl', 'bibdk_adhl.worktabs');
  * Implements hook_menu
  */
 function bibdk_adhl_menu() {
-  $items['overlay/adhl/%'] = array(
-    'title' => t('Recommendations', array(), array('context' => 'bibdk_adhl')),
-    'page callback' => 'bibdk_adhl_get_adhl_view',
-    'page arguments' => array('id' => 2),
-    'access arguments' => array('access content'),
-    'type' => MENU_CALLBACK,
-  );
   $items['adhl/ajax'] = array(
     'page callback' => 'bibdk_adhl_ajax_get_recommendations',
     #'page arguments' => array('id' => 2),

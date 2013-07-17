@@ -13,10 +13,13 @@ class BibdkAdhlUnitTest extends DrupalWebTestCase {
   public function setUp() {
     #drupal_load('module', 'bibdk_adhl');
     parent::setUp('bibdk_adhl', 'ting_openformat', 'worktabs', 'devel');
-
-    // TODO: create mockups
-    variable_set('ting_search_url', 'lakiseks.dbc.dk/openbibdk/0.5/');
-    variable_set('ting_recommendation_url', 'http://guesstimate.dbc.dk/~svi/adhl/server.php');
+   
+    //search service
+    variable_set('ting_search_url', 'http://openbibdk.addi.dk/0.5/');
+    
+    //adhl service 
+    variable_set('ting_recommendation_url', 'http://lakiseks.dbc.dk/openadhl/2.0/');
+    //variable_set('ting_recommendation_url', 'http://openadhl.addi.dk/2.0/');
   }
 
   public function testRunner(){
@@ -28,10 +31,10 @@ class BibdkAdhlUnitTest extends DrupalWebTestCase {
 
   /**
    * Tests the output data of bibdk_adhl.ajax.inc
-   */
+  */
   private function _testAjaxResponse() {
     $url = $this->getAbsoluteUrl('adhl/ajax');
-
+    
     $options = array(
       'query' => array(
         'pid' => '870970-basis:22677780',
@@ -47,35 +50,29 @@ class BibdkAdhlUnitTest extends DrupalWebTestCase {
 
   private function _testAdhlWorktabs(){
     $this->drupalGet('work/870970-basis:22677780');
-      $this->assertText('adhls', 'title is present');
-      $this->assertText(t('see_more_adhl'), 'See more link is present');
-      $this->assertRaw('recommendation-load', 'loader is present');
+    $this->assertText('adhls', 'title is present');
+    $this->assertRaw('recommendation-load', 'loader is present');
   }
 
   private function _testGetAdhl(){
-     $result = bibdk_adhl_get_adhl('870970-basis:22677780');
-
+    $result = bibdk_adhl_get_adhl('870970-basis:22677780');
     $this->assertTrue(count($result) == 10, 'correct number of results');
-    $this->assertTrue(get_class($result['870970-basis:22629344']) == 'manifestation', 'first object is a manifestation');
+    $this->assertTrue(get_class($result['870970-basis:22629344']) == 'Manifestation', 'first object is a manifestation');
 
     $result = bibdk_adhl_get_adhl('870970-basis:22677780', 3);
-    debug(count($result));
     $this->assertTrue(count($result) == 3, 'correct number of results');
-
   }
 
   private function _testBibdkAdhlView(){
-
-    // Test list view
+    //Test list view
     $result = bibdk_adhl_get_adhl('870970-basis:22677780', 3);
     $view = bibdk_adhl_get_link_list_view($result, '_blank');
 
-    $expected = '<ul class="links"><li class="0 first"><a href="/bibdk/work/870970-basis%3A22629344" target="_blank">Harry Potter og De Vises Sten</a></li>
-<li class="1"><a href="/bibdk/work/830370-katalog%3A22995154" target="_blank">Harry Potter og fangen fra Azkaban</a></li>
-<li class="2 last"><a href="/bibdk/work/870970-basis%3A23540703" target="_blank">Harry Potter og Flammernes Pokal</a></li>
+    $expected = '<ul class="links"><li class="0 first"><a href="/ana.ding/work/870970-basis%3A22629344" target="_blank" title="Joanne K. Rowling : Fantasy. Den 11-årige forældreløse dreng Harry Potter bliver adopteret af sin onkel og tante som ikke bryder sig om ham. Han har trolddomsblod i årerne og bliver optaget på en skole for trolddomskyndige. Her får han nye venner og fjender">Harry Potter og De Vises Sten</a></li>
+<li class="1"><a href="/ana.ding/work/870970-basis%3A22995154" target="_blank" title="Joanne K. Rowling : Fantasy. Harry Potter er elev på trolddomsskolen på tredje år. Han får at vide, at hans forældres morder er flygtet fra Azkabanfængslet og nu også vil dræbe ham">Harry Potter og fangen fra Azkaban</a></li>
+<li class="2 last"><a href="/ana.ding/work/870970-basis%3A23540703" target="_blank" title="Joanne K. Rowling : Fantasy. På mystisk vis er Harry Potter blevet udvalgt til at deltage i en magisk trekamp mellem de forskellige troldmandsskoler. Samtidig er hans dødsfjende troldmanden Voldemort ved at genvinde sin magt">Harry Potter og Flammernes Pokal</a></li>
 </ul>';
     $this->assertEqual($view, $expected, 'view is correctly generated');
-
 
     // Test full view
     $view  = bibdk_adhl_get_adhl_view('870970-basis:22677780');
@@ -85,12 +82,10 @@ class BibdkAdhlUnitTest extends DrupalWebTestCase {
       strpos($view, t('adhl_title')) &&
       strpos($view, t('adhl_description')), 'Final view correctly generated');
 
-
     // Test empty list view
     $view = bibdk_adhl_get_link_list_view(null, '_blank');
     $expected = null;
     $this->assertEqual($view, $expected, 'emtpy view is correctly generated');
-
 
     // Test empty full view
     $view  = bibdk_adhl_get_adhl_view(null);
