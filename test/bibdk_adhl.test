@@ -12,7 +12,7 @@ class BibdkAdhlUnitTest extends DrupalWebTestCase {
 
   public function setUp() {
     #drupal_load('module', 'bibdk_adhl');
-    parent::setUp('bibdk_adhl', 'ting_openformat', 'worktabs', 'devel');
+    parent::setUp('bibdk_adhl', 'ting_openformat', 'worktabs');
 
     //search service
     variable_set('ting_search_url', 'http://openbibdk.addi.dk/0.5/');
@@ -56,6 +56,7 @@ class BibdkAdhlUnitTest extends DrupalWebTestCase {
   }
 
   private function _testGetAdhl(){
+    module_load_include('module', 'bibdk_adhl', 'bibdk_adhl');
     $result = bibdk_adhl_get_adhl('870970-basis:22677780');
     $this->assertTrue(count($result) == 10, 'correct number of results');
     $this->assertTrue(get_class($result['870970-basis:22629344']) == 'Manifestation', 'first object is a manifestation');
