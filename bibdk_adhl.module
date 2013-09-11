@@ -62,10 +62,18 @@ function bibdk_adhl_get_adhl($pid, $number_of_results = 10){
  */
 function bibdk_adhl_request($pid, $numResults) {
 
+  //Split pids at delimiter
+  $id = explode(";", $pid);
+
+  //make array off pids
+  $pids = array();
+  foreach ($id as $singlepid)  {
+    $pids[] = $singlepid;
+  }
+
+  //make param used for request with pid-list
   $param = array(
-    'id' => array(
-      'pid' => $pid,
-    ),
+    'id' => array( 'pid' => $pids),
     'numResults' => $numResults,
   );
 
