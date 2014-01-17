@@ -72,7 +72,7 @@ function bibdk_adhl_get_adhl_view($pid) {
  * @param $pid
  * @return array
  */
-function bibdk_adhl_get_adhl($pid, $number_of_results = 10){
+function bibdk_adhl_get_adhl($pid, $number_of_results = 10) {
 
   $result = bibdk_adhl_request($pid, $number_of_results);
 
@@ -122,7 +122,7 @@ function bibdk_adhl_request($pid, $numResults) {
  * @param $response
  * @return array
  */
-function bibdk_adhl_parse_response($response){
+function bibdk_adhl_parse_response($response) {
 
   if ( !isset($response->pid) || empty($response->pid) ) {
     return array();
@@ -130,7 +130,7 @@ function bibdk_adhl_parse_response($response){
 
   $pids = array();
 
-  foreach($response->pid as $recommendation){
+  foreach ( $response->pid as $recommendation ) {
     $pids[] = $recommendation->{'$'};
   }
 
@@ -188,7 +188,7 @@ function bibdk_adhl_get_link_list_view($manifestations, $target = '_self') {
  * @param $pids
  * @return array
  */
-function bibdk_adhl_get_manifestations($pids){
+function bibdk_adhl_get_manifestations($pids) {
   /**
    * ting_openformat_get_manifestations returns a bibdkWork as an array and all
    * the manifestations are saved in the manifestations variable.
@@ -205,3 +205,13 @@ function bibdk_adhl_get_manifestations($pids){
   }
 
 }
+
+
+
+/**
+ * Translated text constants
+ */
+t('bibdk_adhl_unknown_error', array(), array('context' => 'bibdk_adhl'));
+t('bibdk_adhl_toggle_text_error', array(), array('context' => 'bibdk_about_author'));
+t('bibdk_adhl_no_recommendations', array(), array('context' => 'bibdk_adhl'));
+t('bibdk_adhl_toggle_text_empty', array(), array('context' => 'bibdk_adhl'));
