@@ -2,9 +2,14 @@
 
     /** Insert adhl results */
     Drupal.addRecommendation = function (adhl) {
-        if (adhl.error)
+        if (adhl.error) {
+            if ( adhl.error == 'bibdk_adhl_no_recommendations' ) {
+                // $('.recommendation-load[data-pid=' + adhl.pid + ']').parent().parent().addClass('visuallyhidden');
+                $('.recommendation-load[data-pid=' + adhl.pid + ']').parent().parent().find('.toggle-text').html(adhl.toggle_text);;
+            }
             $('.recommendation-load[data-pid=' + adhl.pid + ']').replaceWith(adhl.error);
-        if (adhl.list){
+        }
+        if (adhl.list) {
             $('.recommendation-load[data-pid=' + adhl.pid + ']').replaceWith(adhl.list);
             $('.recommendation-more[data-pid=' + adhl.pid + ']').removeClass('visuallyhidden');
         }
