@@ -34,8 +34,10 @@
     Drupal.behaviors.recommendation = {
 
         attach:function (context) {
-            $('.recommendation-load', context).each(function (i, element) {
-                Drupal.loadRecommendation(element);
+            $('.field-type-worktabs .bibdk-tabs', context).one( "click", function() {
+                $('.recommendation-load', context).each(function (i, element) {
+                    Drupal.loadRecommendation(element);
+                });
             });
         },
         detach:function (context) {
