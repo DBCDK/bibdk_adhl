@@ -80,23 +80,5 @@ class BibdkAdhlUnitTest extends DrupalWebTestCase {
 </ul>';
     $this->assertEqual($view, $expected, 'view is correctly generated');
 
-    // Test full view
-    $view  = bibdk_adhl_get_adhl_view('870970-basis:22677780');
-
-    $this->assertTrue(
-      strpos($view, 'Harry Potter og fangen fra Azkaban') &&
-      strpos($view, t('adhl_title')) &&
-      strpos($view, t('adhl_description')), 'Final view correctly generated');
-
-    // Test empty list view
-    $view = bibdk_adhl_get_link_list_view(NULL, '_blank');
-    $expected = NULL;
-    $this->assertEqual($view, $expected, 'emtpy view is correctly generated');
-
-    // Test empty full view
-    $view  = bibdk_adhl_get_adhl_view(NULL);
-    $expected = t('bibdk_adhl_no_recommendations');
-    $this->assertTrue(strpos($view, $expected), 'emtpy view is correctly generated');
   }
-
 }

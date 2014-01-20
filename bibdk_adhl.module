@@ -36,38 +36,6 @@ function bibdk_adhl_theme() {
 
 
 
-/**
- * JGN: NOT USED ANYWHERE ?!?!
- * Show list of recommendations
- *
- * @param $pid
- * @return string
- */
-function bibdk_adhl_get_adhl_view($pid) {
-
-  $result = bibdk_adhl_get_adhl($pid);
-
-  $view =  drupal_render(bibdk_adhl_get_link_list_view($result, '_blank'));
-
-  if ( $view == NULL ) {
-    $view = t('bibdk_adhl_no_recommendations');
-  }
-
-  $elements = array(
-    '#type' => 'fieldset',
-    '#title' => t('adhl_title'),
-    '#description' => t('adhl_description'),
-    'list' => array(
-      '#markup' => $view,
-    ),
-  );
-
-  return drupal_render($elements);
-
-}
-
-
-
 /** get manifestations from adhl
  * @param $pid
  * @return array
@@ -83,6 +51,7 @@ function bibdk_adhl_get_adhl($pid, $number_of_results = 10) {
   return bibdk_adhl_get_manifestations($result);
 
 }
+
 
 
 /**
