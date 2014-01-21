@@ -117,6 +117,10 @@ function bibdk_adhl_parse_response($response) {
  */
 function bibdk_adhl_get_link_list_view($manifestations, $target = '_self') {
 
+  if ( empty($manifestations) || !is_array($manifestations) ) {
+    return array();
+  }
+
   $render = array(
     '#theme' => 'bibdk_adhl_links',
     '#adhl_links' => array(
