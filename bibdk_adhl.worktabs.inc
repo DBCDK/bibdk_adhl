@@ -12,9 +12,9 @@
  */
 function bibdk_adhl_worktabs_items($tabs, $entity) {
   $tabs['more-about']['adhl'] = array(
-    'title' => t('adhls', array(), array('context' => 'bibdk_adhl')),
-    'btn_txt_closed' => t('view_more', array(), array('context' => 'bibdk_adhl')),
-    'rendered' => bibdk_adhl_get_worktab_content($entity),
+    '#title' => t('adhls', array(), array('context' => 'bibdk_adhl')),
+    '#btn_txt_closed' => t('view_more', array(), array('context' => 'bibdk_adhl')),
+    '#content' => bibdk_adhl_get_worktab_content($entity),
     'weight' => 0,
   );
   return $tabs;
