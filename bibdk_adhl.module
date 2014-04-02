@@ -12,10 +12,16 @@ function bibdk_adhl_menu() {
     'type' => MENU_CALLBACK,
     'file' => 'bibdk_adhl.ajax.inc',
   );
+  $items['adhl/top/%'] = array(
+    'title' => 'top liste',
+    'page callback' => 'bibdk_adhl_get_toplist',
+    'access arguments' => array('access content'),
+    'page arguments' => array(2),
+    'type' => MENU_CALLBACK,
+    'file' => 'bibdk_adhl.toplist.inc',
+  );
   return $items;
 }
-
-
 
 /*
  * Implements hook_theme

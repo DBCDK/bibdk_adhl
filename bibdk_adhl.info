@@ -4,6 +4,4 @@ core = 7.x
 version = 7.x-0.6
 package = Bibliotek.dk
 
-files[] = bibdk_adhl.ajax.inc
-files[] = bibdk_adhl.worktabs.inc
 files[] = test/bibdk_adhl.test
