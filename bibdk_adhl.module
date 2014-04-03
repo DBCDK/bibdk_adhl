@@ -77,40 +77,7 @@ function bibdk_adhl_request($pid, $numResults) {
     $pids[] = $singlepid;
   }
 
-  //make param used for request with pid-list
-  $param = array(
-    'id' => array( 'pid' => $pids),
-    'numResults' => $numResults,
-  );
-
-  $client = new ting_client_class();
-
-  $reponse = $client->do_request('recommendation', $param);
-
-  return bibdk_adhl_parse_response($reponse);
-
-}
-
-
-
-/** Parse response from adhl request
- * @param $response
- * @return array
- */
-function bibdk_adhl_parse_response($response) {
-
-  if ( !isset($response->pid) || empty($response->pid) ) {
-    return array();
-  }
-
-  $pids = array();
-
-  foreach ( $response->pid as $recommendation ) {
-    $pids[] = $recommendation->{'$'};
-  }
-
-  return $pids;
-
+  return open_adhl_adhlRequest($pids, $numResults);
 }
 
 
