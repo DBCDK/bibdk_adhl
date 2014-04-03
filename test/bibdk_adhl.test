@@ -15,14 +15,14 @@ class BibdkAdhlUnitTest extends DrupalWebTestCase {
   }
 
   public function setUp() {
-    parent::setUp('bibdk_adhl', 'ting_openformat', 'worktabs', 'open_adhl');
+    parent::setUp('bibdk_adhl', 'ting_openformat', 'worktabs', 'open_adhl', 'bibdk_adhl_mockup');
 
     //search service
     variable_set('ting_search_url', 'http://openbibdk.addi.dk/0.8/');
 
     //adhl service
-    variable_set('ting_recommendation_url', 'http://lakiseks.dbc.dk/openadhl/3.0/');
-    variable_set('ting_recommendation_xsd', 'http://lakiseks.dbc.dk/openadhl/3.0/adhl.xsd');
+    variable_set('ting_recommendation_url', $this->getAbsoluteUrl('bibdk_adhl_mockup'));
+    variable_set('ting_recommendation_xsd', $this->getAbsoluteUrl('bibdk_adhl_mockup/xsd'));
   }
 
   public function testRunner() {
