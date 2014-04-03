@@ -29,5 +29,11 @@ function bibdk_adhl_get_toplist($numRecords) {
 
   $manifestations = bibdk_adhl_get_manifestations($result);
 
-  return bibdk_adhl_get_link_list_view($manifestations);
+  $view  = array();
+
+  $view['beforelist']['#markup'] = '<p>' . t('before_adhl_top_list', array(), array('context' => 'bibdk_adhl')) . '</p>';
+  $view['list'] = bibdk_adhl_get_link_list_view($manifestations);
+  $view['afterlist']['#markup'] =  '<p>' . t('after_adhl_top_list', array(), array('context' => 'bibdk_adhl')) . '</p>';
+
+  return $view;
 }
