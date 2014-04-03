@@ -47,15 +47,18 @@ function bibdk_adhl_theme() {
  * @return array
  */
 function bibdk_adhl_get_adhl($pid, $number_of_results = 10) {
+  try {
+    $result = bibdk_adhl_request($pid, $number_of_results);
+  }
+  catch (Exception $e) {
+    drupal_set_message(t('The service is down, please try again later'), 'WARNING');
+  }
 
-  $result = bibdk_adhl_request($pid, $number_of_results);
-
-  if ( empty($result) ) {
+  if (!isset($result) || empty($result) ) {
     return array();
   }
 
   return bibdk_adhl_get_manifestations($result);
-
 }
 
 
@@ -66,7 +69,7 @@ function bibdk_adhl_get_adhl($pid, $number_of_results = 10) {
  * @internal param $pid
  * @return array
  */
-function bibdk_adhl_request($pid, $numResults) {
+function bibdk_adhl_request($pid, $numResults = 10) {
 
   //Split pids at delimiter
   $id = explode(";", $pid);

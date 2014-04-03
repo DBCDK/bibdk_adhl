@@ -47,8 +47,12 @@ class BibdkAdhlUnitTest extends DrupalWebTestCase {
     $this->assertText('Svinehunde : kriminalroman', 'Last element exists');
 
     // Test service is down
-    variable_set('ting_recommendation_url', 'http://lakiseks.dbc.dk/not_valid_url/3.0/');
+    variable_set('ting_recommendation_url', 'http://not_valid_url/3.0/');
     $this->drupalGet('adhl/top/10');
+    $this->assertText('The service is down, please try again later');
+
+    // Reset variable
+    variable_set('ting_recommendation_url', $this->getAbsoluteUrl('bibdk_adhl_mockup'));
   }
 
   /**
@@ -88,6 +92,15 @@ class BibdkAdhlUnitTest extends DrupalWebTestCase {
       'toggle_text' => 'bibdk_adhl_toggle_text_empty',
     );
     $this->assertEqual($result, $expected_result);
+
+    // Test service is down
+    variable_set('ting_recommendation_url', 'http://not_valid_url/3.0/');
+    $result = $this->drupalGetAJAX($url, $options);
+    $this->assertRaw('"error_msg":"bibdk_adhl_no_recommendations"');
+
+    // Reset variable
+    variable_set('ting_recommendation_url', $this->getAbsoluteUrl('bibdk_adhl_mockup'));
+
 
   }
 
