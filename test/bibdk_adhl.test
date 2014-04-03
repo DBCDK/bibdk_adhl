@@ -15,7 +15,7 @@ class BibdkAdhlUnitTest extends DrupalWebTestCase {
   }
 
   public function setUp() {
-    parent::setUp('bibdk_adhl', 'ting_openformat', 'worktabs', 'open_adhl', 'bibdk_adhl_mockup');
+    parent::setUp('bibdk_adhl', 'worktabs', 'bibdk_adhl_mockup');
 
     //search service
     variable_set('ting_search_url', 'http://openbibdk.addi.dk/0.8/');
