@@ -29,7 +29,6 @@ class BibdkAdhlUnitTest extends DrupalWebTestCase {
     $this->_testAjaxResponse();
     $this->_testAdhlWorktabs();
     $this->_testTopTenList();
-    //$this->_testGetAdhl();
   }
 
   private function _testTopTenList() {
@@ -96,16 +95,6 @@ class BibdkAdhlUnitTest extends DrupalWebTestCase {
     $this->drupalGet('work/870970-basis:22677780');
     $this->assertText('adhls', 'title is present');
     $this->assertRaw('recommendation-load', 'loader is present');
-  }
-
-  private function _testGetAdhl() {
-    module_load_include('module', 'bibdk_adhl', 'bibdk_adhl');
-    $result = bibdk_adhl_get_adhl('870970-basis:22677780');
-    $this->assertTrue(count($result) == 10, 'correct number of results');
-    $this->assertTrue(get_class($result['870970-basis:22629344']) == 'Manifestation', 'first object is a manifestation');
-
-    $result = bibdk_adhl_get_adhl('870970-basis:22677780', 3);
-    $this->assertTrue(count($result) == 3, 'correct number of results');
   }
 
 }
