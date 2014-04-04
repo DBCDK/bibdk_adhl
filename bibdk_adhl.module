@@ -20,7 +20,26 @@ function bibdk_adhl_menu() {
     'type' => MENU_CALLBACK,
     'file' => 'bibdk_adhl.toplist.inc',
   );
+  $items['adhl/top/test'] = array(
+    'title' => 'top liste',
+    'page callback' => 'bibdk_adhl_toplist_test',
+    'access arguments' => array('access content'),
+    'type' => MENU_CALLBACK,
+  );
   return $items;
+}
+
+function bibdk_adhl_toplist_test() {
+  return array(
+    '#theme' => 'link',
+    '#text' => 'Click Here',
+    '#path' => 'adhl/top/10',
+    '#options' => array(
+      'attributes' => array('class' => array('bibdk-popup-link'), 'id' => 'cool-id', 'data-rel' => 'userhelp'),
+      //REQUIRED:
+      'html' => FALSE,
+    ),
+  );
 }
 
 /*
@@ -35,6 +54,10 @@ function bibdk_adhl_theme() {
     'bibdk_adhl_link' => array(
       'variables' => array('adhl_link' => NULL),
       'template' => 'theme/bibdk-adhl-link'
+    ),
+    'bibdk_adhl_toplist' => array(
+      'variables' => array('before_text' => NULL, 'list' => NULL, 'after_text' => NULL),
+      'template' => 'theme/bibdk-adhl-toplist'
     ),
   );
   return $themes;
