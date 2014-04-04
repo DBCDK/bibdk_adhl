@@ -20,6 +20,7 @@ function bibdk_adhl_menu() {
     'type' => MENU_CALLBACK,
     'file' => 'bibdk_adhl.toplist.inc',
   );
+  return $items;
 }
 
 /*
@@ -36,7 +37,7 @@ function bibdk_adhl_theme() {
       'template' => 'theme/bibdk-adhl-link'
     ),
     'bibdk_adhl_toplist' => array(
-      'variables' => array('before_text' => NULL, 'list' => NULL, 'after_text' => NULL),
+      'variables' => array('title' => '', 'before_text' => NULL, 'list' => NULL, 'after_text' => NULL),
       'template' => 'theme/bibdk-adhl-toplist'
     ),
   );

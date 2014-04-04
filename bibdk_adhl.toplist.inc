@@ -31,6 +31,7 @@ function bibdk_adhl_get_toplist($numRecords) {
 
   $view  = array(
     '#theme' => 'bibdk_adhl_toplist',
+    '#title' => t('Top !numRecords', array('!numRecords' => $numRecords)),
     '#before_text' => t('before_adhl_top_list', array(), array('context' => 'bibdk_adhl')),
     '#list' => bibdk_adhl_get_link_list_view($manifestations),
     '#after_text' => t('after_adhl_top_list', array(), array('context' => 'bibdk_adhl')),
