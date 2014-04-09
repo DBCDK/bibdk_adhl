@@ -18,7 +18,7 @@ function bibdk_adhl_get_toplist($numRecords) {
     $result = open_adhl_topTenRequest($numRecords);
   }
   catch (Exception $e) {
-    drupal_set_message(t('The service is down, please try again later'), 'WARNING');
+    drupal_set_message(t('The service is down, please try again later'), 'warning');
   }
 
   if (empty($result)) {
