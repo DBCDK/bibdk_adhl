@@ -15,7 +15,7 @@ function bibdk_adhl_get_toplist($numRecords) {
   drupal_set_title(t('Top !numRecords', array('!numRecords' => $numRecords)));
 
   try {
-    $result = open_adhl_topTenRequest($numRecords);
+    $result = open_adhl_topTenRequest($numRecords + 5);
   }
   catch (Exception $e) {
     drupal_set_message(t('The service is down, please try again later'), 'warning');
@@ -29,6 +29,7 @@ function bibdk_adhl_get_toplist($numRecords) {
 
   $manifestations = bibdk_adhl_get_manifestations($result);
 
+  $manifestations = array_slice($manifestations, 0, $numRecords);
   $view  = array(
     '#theme' => 'bibdk_adhl_toplist',
     '#title' => t('Top !numRecords', array('!numRecords' => $numRecords)),
