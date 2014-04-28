@@ -12,10 +12,16 @@ function bibdk_adhl_menu() {
     'type' => MENU_CALLBACK,
     'file' => 'bibdk_adhl.ajax.inc',
   );
+  $items['adhl/top/%'] = array(
+    'title' => 'top liste',
+    'page callback' => 'bibdk_adhl_get_toplist',
+    'access arguments' => array('access content'),
+    'page arguments' => array(2),
+    'type' => MENU_CALLBACK,
+    'file' => 'bibdk_adhl.toplist.inc',
+  );
   return $items;
 }
-
-
 
 /*
  * Implements hook_theme
@@ -30,6 +36,10 @@ function bibdk_adhl_theme() {
       'variables' => array('adhl_link' => NULL),
       'template' => 'theme/bibdk-adhl-link'
     ),
+    'bibdk_adhl_toplist' => array(
+      'variables' => array('title' => '', 'before_text' => NULL, 'list' => NULL, 'after_text' => NULL),
+      'template' => 'theme/bibdk-adhl-toplist'
+    ),
   );
   return $themes;
 }
@@ -41,15 +51,18 @@ function bibdk_adhl_theme() {
  * @return array
  */
 function bibdk_adhl_get_adhl($pid, $number_of_results = 10) {
+  try {
+    $result = bibdk_adhl_request($pid, $number_of_results);
+  }
+  catch (Exception $e) {
+    drupal_set_message(t('The service is down, please try again later'), 'WARNING');
+  }
 
-  $result = bibdk_adhl_request($pid, $number_of_results);
-
-  if ( empty($result) ) {
+  if (!isset($result) || empty($result) ) {
     return array();
   }
 
   return bibdk_adhl_get_manifestations($result);
-
 }
 
 
@@ -60,7 +73,7 @@ function bibdk_adhl_get_adhl($pid, $number_of_results = 10) {
  * @internal param $pid
  * @return array
  */
-function bibdk_adhl_request($pid, $numResults) {
+function bibdk_adhl_request($pid, $numResults = 10) {
 
   //Split pids at delimiter
   $id = explode(";", $pid);
@@ -71,40 +84,7 @@ function bibdk_adhl_request($pid, $numResults) {
     $pids[] = $singlepid;
   }
 
-  //make param used for request with pid-list
-  $param = array(
-    'id' => array( 'pid' => $pids),
-    'numResults' => $numResults,
-  );
-
-  $client = new ting_client_class();
-
-  $reponse = $client->do_request('recommendation', $param);
-
-  return bibdk_adhl_parse_response($reponse);
-
-}
-
-
-
-/** Parse response from adhl request
- * @param $response
- * @return array
- */
-function bibdk_adhl_parse_response($response) {
-
-  if ( !isset($response->pid) || empty($response->pid) ) {
-    return array();
-  }
-
-  $pids = array();
-
-  foreach ( $response->pid as $recommendation ) {
-    $pids[] = $recommendation->{'$'};
-  }
-
-  return $pids;
-
+  return open_adhl_adhlRequest($pids, $numResults);
 }
 
 
