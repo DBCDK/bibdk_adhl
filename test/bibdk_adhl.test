@@ -15,23 +15,44 @@ class BibdkAdhlUnitTest extends DrupalWebTestCase {
   }
 
   public function setUp() {
-    #drupal_load('module', 'bibdk_adhl');
-    parent::setUp('bibdk_adhl', 'ting_openformat', 'worktabs');
+    parent::setUp('bibdk_adhl', 'worktabs', 'bibdk_adhl_mockup');
 
     //search service
     variable_set('ting_search_url', 'http://openbibdk.addi.dk/0.8/');
 
     //adhl service
-    variable_set('ting_recommendation_url', 'http://lakiseks.dbc.dk/openadhl/2.0/');
-    //variable_set('ting_recommendation_url', 'http://openadhl.addi.dk/2.0/');
+    variable_set('ting_recommendation_url', $this->getAbsoluteUrl('bibdk_adhl_mockup'));
+    variable_set('ting_recommendation_xsd', $this->getAbsoluteUrl('bibdk_adhl_mockup/xsd'));
   }
 
   public function testRunner() {
     $this->_testAjaxResponse();
     $this->_testAdhlWorktabs();
-    $this->_testGetAdhl();
-    // US1083-test: Disable failing tests:
-    // $this->_testBibdkAdhlView();
+    $this->_testTopTenList();
+  }
+
+  private function _testTopTenList() {
+    // Test with 5 results
+    $this->drupalGet('adhl/top/5');
+    $this->assertText(t('Top 5'), 'title is set');
+    $this->assertText('Journal 64 : krimithriller', 'First element exists');
+    $this->assertText('Havfruen : kriminalroman', 'Last element exists');
+    $this->clickLink('Havfruen : kriminalroman');
+    $this->assertUrl($this->getAbsoluteUrl('work/870970-basis%3A28186061'));
+
+    // Test with xxx results
+    $this->drupalGet('adhl/top/xxx');
+    $this->assertText(t('Top 20'), 'title is set to default 20');
+    $this->assertText('Journal 64 : krimithriller', 'First element exists');
+    $this->assertText('Svinehunde : kriminalroman', 'Last element exists');
+
+    // Test service is down
+    variable_set('ting_recommendation_url', 'http://not_valid_url/3.0/');
+    $this->drupalGet('adhl/top/10');
+    $this->assertText('The service is down, please try again later');
+
+    // Reset variable
+    variable_set('ting_recommendation_url', $this->getAbsoluteUrl('bibdk_adhl_mockup'));
   }
 
   /**
@@ -40,6 +61,7 @@ class BibdkAdhlUnitTest extends DrupalWebTestCase {
   private function _testAjaxResponse() {
     $url = $this->getAbsoluteUrl('adhl/ajax');
 
+    // Get valid result
     $options = array(
       'query' => array(
         'pid' => '870970-basis:22677780',
@@ -51,6 +73,35 @@ class BibdkAdhlUnitTest extends DrupalWebTestCase {
     $this->assertRaw('pid', 'Received pid');
     $this->assertRaw('list', 'Received list for display');
     $this->assertTrue(strpos($result['list'], 'Harry Potter og De Vises Sten'), 'Recieved ADHL link');
+
+    $url = $this->getAbsoluteUrl('adhl/ajax');
+
+    $options = array(
+      'query' => array(
+        'pid' => '870970-basis:invalid',
+        'more' => 'true',
+      ),
+    );
+
+    // Get invalid result
+    $result = $this->drupalGetAJAX($url, $options);
+    $expected_result = array (
+      'pid' => '870970-basis:invalid',
+      'error' => 'bibdk_adhl_no_recommendations',
+      'error_msg' => 'bibdk_adhl_no_recommendations',
+      'toggle_text' => 'bibdk_adhl_toggle_text_empty',
+    );
+    $this->assertEqual($result, $expected_result);
+
+    // Test service is down
+    variable_set('ting_recommendation_url', 'http://not_valid_url/3.0/');
+    $result = $this->drupalGetAJAX($url, $options);
+    $this->assertRaw('"error_msg":"bibdk_adhl_no_recommendations"');
+
+    // Reset variable
+    variable_set('ting_recommendation_url', $this->getAbsoluteUrl('bibdk_adhl_mockup'));
+
+
   }
 
   private function _testAdhlWorktabs() {
@@ -59,26 +110,4 @@ class BibdkAdhlUnitTest extends DrupalWebTestCase {
     $this->assertRaw('recommendation-load', 'loader is present');
   }
 
-  private function _testGetAdhl() {
-    module_load_include('module', 'bibdk_adhl', 'bibdk_adhl');
-    $result = bibdk_adhl_get_adhl('870970-basis:22677780');
-    $this->assertTrue(count($result) == 10, 'correct number of results');
-    $this->assertTrue(get_class($result['870970-basis:22629344']) == 'Manifestation', 'first object is a manifestation');
-
-    $result = bibdk_adhl_get_adhl('870970-basis:22677780', 3);
-    $this->assertTrue(count($result) == 3, 'correct number of results');
-  }
-
-  private function _testBibdkAdhlView() {
-    //Test list view
-    $result = bibdk_adhl_get_adhl('870970-basis:22677780', 3);
-    $view = bibdk_adhl_get_link_list_view($result, '_blank');
-
-    $expected = '<ul class="links"><li class="0 first"><a href="/ana.ding/work/870970-basis%3A22629344" target="_blank" title="Joanne K. Rowling : Fantasy. Den 11-årige forældreløse dreng Harry Potter bliver adopteret af sin onkel og tante som ikke bryder sig om ham. Han har trolddomsblod i årerne og bliver optaget på en skole for trolddomskyndige. Her får han nye venner og fjender">Harry Potter og De Vises Sten</a></li>
-<li class="1"><a href="/ana.ding/work/870970-basis%3A22995154" target="_blank" title="Joanne K. Rowling : Fantasy. Harry Potter er elev på trolddomsskolen på tredje år. Han får at vide, at hans forældres morder er flygtet fra Azkabanfængslet og nu også vil dræbe ham">Harry Potter og fangen fra Azkaban</a></li>
-<li class="2 last"><a href="/ana.ding/work/870970-basis%3A23540703" target="_blank" title="Joanne K. Rowling : Fantasy. På mystisk vis er Harry Potter blevet udvalgt til at deltage i en magisk trekamp mellem de forskellige troldmandsskoler. Samtidig er hans dødsfjende troldmanden Voldemort ved at genvinde sin magt">Harry Potter og Flammernes Pokal</a></li>
-</ul>';
-    $this->assertEqual($view, $expected, 'view is correctly generated');
-
-  }
 }

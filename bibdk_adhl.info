@@ -1,9 +1,10 @@
 name = Bibliotek.dk - ADHL
 description = Provides information to the user about what other users have borrowed
 core = 7.x
-version = 7.x-0.7
+version = 7.x-0.8
 package = Bibliotek.dk
 
-files[] = bibdk_adhl.ajax.inc
-files[] = bibdk_adhl.worktabs.inc
+dependencies[] = open_adhl
+dependencies[] = ting_openformat
+
 files[] = test/bibdk_adhl.test
